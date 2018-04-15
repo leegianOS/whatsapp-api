@@ -17,7 +17,7 @@ public class WhatsappClient {
     private String secret;
     private OutputStream outputStream;
     private InputStream inputStream;
-    private Process pr;
+    private Process process;
 
     public WhatsappClient(String number, String secret) {
         this.number = number;
@@ -27,9 +27,9 @@ public class WhatsappClient {
     public void init() {
         Runtime rt = Runtime.getRuntime();
         try {
-            this.pr = rt.exec("yowsup-cli demos -l " + number + ":" + secret + " -y");
-            this.outputStream = pr.getOutputStream();
-            this.inputStream = pr.getInputStream();
+            this.process = rt.exec("yowsup-cli demos -l " + number + ":" + secret + " -y");
+            this.outputStream = process.getOutputStream();
+            this.inputStream = process.getInputStream();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -44,6 +44,13 @@ public class WhatsappClient {
     }
 
     public void sendMessage(String phoneNumber, String text) {
+        try {
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(this.outputStream));
+            writer.write("/message send " + phoneNumber + " '" + text + "'\n");
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 
@@ -54,10 +61,13 @@ public class WhatsappClient {
             try {
                 while ((command = reader.readLine()) != null) {
                     System.out.println(command);
+                    ValidMessage validMessage = MessageUtils.processInput(command);
+                    if (validMessage != null) {
+                        System.out.println("FROM: " + validMessage.sender + " DATA: " + validMessage.data);
+                    }
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
-                // failed to listening command
             }
         }).start();
     }
