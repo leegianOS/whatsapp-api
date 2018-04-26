@@ -8,8 +8,10 @@
  * this file. If not, please write to: niklas.linz@enigmar.de
  */
 
-package de.linzn.whatsappApi;
+package de.linzn.whatsappApi.test;
 
+
+import de.linzn.whatsappApi.WhatsappClient;
 
 public class TestRun {
 

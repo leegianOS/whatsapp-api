@@ -35,7 +35,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>de.linzn.whatsappApi.TestRun</mainClass>
+                            <mainClass>de.linzn.whatsappApi.test.TestRun</mainClass>
                             <classpathPrefix>dependency/</classpathPrefix>
                         </manifest>
                     </archive>
