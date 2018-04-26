@@ -43,10 +43,10 @@ public class WhatsappClient {
         }
     }
 
-    public void sendMessage(String phoneNumber, String text) {
+    public void sendMessage(ValidMessage validMessage) {
         try {
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(this.outputStream));
-            writer.write("/message send " + phoneNumber + " '" + text + "'\n");
+            writer.write("/message send " + validMessage.phonenumber + " '" + validMessage.data + "'\n");
             writer.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -56,18 +56,19 @@ public class WhatsappClient {
 
     private void checkReceive() {
         new Thread(() -> {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(this.inputStream));
-            String command;
-            try {
-                while ((command = reader.readLine()) != null) {
-                    System.out.println(command);
-                    ValidMessage validMessage = MessageUtils.processInput(command);
-                    if (validMessage != null) {
-                        System.out.println("FROM: " + validMessage.sender + " DATA: " + validMessage.data);
+            BufferedReader reader;
+            while (true) {
+                try {
+                    reader = new BufferedReader(new InputStreamReader(this.inputStream));
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        ValidMessage validMessage = MessageUtils.processInput(line);
+                        if (validMessage != null) {
+                            System.out.println(validMessage.phonenumber + "#:#" + validMessage.data);
+                        }
                     }
+                } catch (IOException ignored) {
                 }
-            } catch (Exception ex) {
-                ex.printStackTrace();
             }
         }).start();
     }

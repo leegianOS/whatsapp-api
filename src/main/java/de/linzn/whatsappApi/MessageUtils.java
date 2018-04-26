@@ -13,8 +13,16 @@ package de.linzn.whatsappApi;
 public class MessageUtils {
 
     public static ValidMessage processInput(String rawData) {
+        System.out.println(rawData);
         ValidMessage validMessage = null;
-
+        String number = rawData.split("@")[0].replace("[", "");
+        String data = null;
+        if (rawData.split(" {2}").length == 2) {
+            data = rawData.split(" {2}")[1];
+        }
+        if (data != null && !data.isEmpty() && !number.isEmpty()) {
+            validMessage = new ValidMessage(number, data);
+        }
         return validMessage;
     }
 }

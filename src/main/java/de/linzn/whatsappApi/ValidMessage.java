@@ -11,11 +11,11 @@
 package de.linzn.whatsappApi;
 
 public class ValidMessage {
-    public String sender;
+    public String phonenumber;
     public String data;
 
-    public ValidMessage(String sender, String data) {
-        this.sender = sender;
+    public ValidMessage(String phonenumber, String data) {
+        this.phonenumber = phonenumber;
         this.data = data;
     }
 }
