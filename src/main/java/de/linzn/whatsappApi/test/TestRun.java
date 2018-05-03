@@ -11,13 +11,17 @@
 package de.linzn.whatsappApi.test;
 
 
+import de.linzn.whatsappApi.ValidMessage;
 import de.linzn.whatsappApi.WhatsappClient;
 
 public class TestRun {
 
     public static void main(String[] args) {
-        WhatsappClient whatsappClient = new WhatsappClient(args[0], args[1]);
-        whatsappClient.init();
+        new Thread(() -> {
+            ValidMessage validMessage = new ValidMessage(args[2], args[3]);
+            WhatsappClient.sendStandaloneMessage(args[0], args[1], validMessage);
+        }).start();
+
     }
 
 }

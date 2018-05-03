@@ -24,21 +24,16 @@ public class WhatsappClient {
         this.secret = secret;
     }
 
-    public void init() {
-        Runtime rt = Runtime.getRuntime();
+    public static void sendStandaloneMessage(String phone, String passphrase, ValidMessage validMessage) {
         try {
-            this.process = rt.exec("yowsup-cli demos -l " + number + ":" + secret + " -y");
-            this.outputStream = process.getOutputStream();
-            this.inputStream = process.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        checkReceive();
-        try {
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(this.outputStream));
-            writer.write("/login " + number + " " + secret + "\n");
-            writer.flush();
-        } catch (IOException e) {
+            String[] cmd = {
+                    "/bin/sh",
+                    "-c",
+                    "yowsup-cli demos -l " + phone + ":" + passphrase + " -s " + validMessage.phonenumber + " '" + validMessage.data + "'"
+            };
+            Process p = Runtime.getRuntime().exec(cmd);
+            p.waitFor();
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
@@ -54,10 +49,41 @@ public class WhatsappClient {
 
     }
 
+    public void init() {
+        try {
+            String[] cmd = {
+                    "/bin/sh",
+                    "-c",
+                    "yowsup-cli demos -l " + number + ":" + secret + " -y"
+            };
+            this.process = Runtime.getRuntime().exec(cmd);
+            this.process.waitFor();
+            this.outputStream = process.getOutputStream();
+            this.inputStream = process.getInputStream();
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        checkReceive();
+        try {
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(this.outputStream));
+            writer.write("/login " + number + " " + secret + "\n");
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void exit() {
+        this.process.destroy();
+        this.process = null;
+        this.inputStream = null;
+        this.outputStream = null;
+    }
+
     private void checkReceive() {
         new Thread(() -> {
             BufferedReader reader;
-            while (true) {
+            while (this.process != null) {
                 try {
                     reader = new BufferedReader(new InputStreamReader(this.inputStream));
                     String line;
